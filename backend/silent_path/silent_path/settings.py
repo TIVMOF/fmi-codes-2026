@@ -13,12 +13,19 @@ import os
 from pathlib import Path
 
 from datetime import timedelta
+import os
+
+import dj_database_url
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 AUTH_USER_MODEL = 'users.User'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+load_dotenv()
+
+BLOB_READ_WRITE_TOKEN = os.getenv("BLOB_READ_WRITE_TOKEN")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
@@ -102,14 +109,9 @@ WSGI_APPLICATION = 'silent_path.wsgi.application'
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('DB_NAME', 'your_db_name'),
-        'USER': os.environ.get('DB_USER', 'your_db_user'),
-        'PASSWORD': os.environ.get('DB_PASSWORD', 'your_db_password'),
-        'HOST': os.environ.get('DB_HOST', 'db'),  # Changed from 'localhost' to 'db'
-        'PORT': os.environ.get('DB_PORT', '5432'),
-    }
+    "default": dj_database_url.parse(
+        os.environ.get("POSTGRES_URL")
+    )
 }
 
 # Password validation
