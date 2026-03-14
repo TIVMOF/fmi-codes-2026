@@ -1,10 +1,10 @@
-from PlanElement import PlanElement
-from manim import VGroup, Line, Scene, Create, WHITE, np
+from Element import Element
+from manim import VGroup, Line, Create, RED, np, Succession
 
-class WallPlan(PlanElement):
+class WallPlan(Element):
     def __init__(self, walls_list, wall_config=None, **kwargs):
         super().__init__(**kwargs)
-        self.wall_config = wall_config or {"stroke_width": 4, "color": WHITE}
+        self.wall_config = wall_config or {"stroke_width": 4, "color": RED}
         self.walls = VGroup()
         self.add(self.walls)
         
@@ -35,12 +35,11 @@ class WallPlan(PlanElement):
                 print(f"Error processing wall {w_data}: {e}")
                 continue
 
-    def animate_appearance(self, scene: Scene, speed_factor=1.0):
+    def animate_appearance(self, speed_factor=1.0):
+        dot_anim = super().animate_appearance(speed_factor)
+        
         if len(self.walls) > 0:
-            super().animate_appearance(scene, speed_factor)
-            scene.play(
-                Create(self.walls, lag_ratio=0.1), 
-                run_time=1.0 * speed_factor
-            )
-        else:
-            print("Animation Warning: No walls to animate in WallPlan.")
+            wall_anim = Create(self.walls, lag_ratio=0.2, run_time=1.0 * speed_factor)
+            return Succession(dot_anim, wall_anim)
+        
+        return dot_anim

@@ -1,10 +1,10 @@
-from PlanElement import PlanElement
-from manim import VGroup, Line, Scene, Create, GREEN, np
+from Element import Element
+from manim import VGroup, Line, Create, YELLOW, np, Succession
 
-class DoorPlan(PlanElement):
+class DoorPlan(Element):
     def __init__(self, doors_list, door_config=None, **kwargs):
         super().__init__(**kwargs)
-        self.door_config = door_config or {"stroke_width": 4, "color": GREEN}
+        self.door_config = door_config or {"stroke_width": 4, "color": YELLOW}
         self.doors = VGroup()
         self.add(self.doors)
         
@@ -31,12 +31,11 @@ class DoorPlan(PlanElement):
                 print(f"Error processing door {d_data}: {e}")
                 continue
 
-    def animate_appearance(self, scene: Scene, speed_factor=1.0):
+    def animate_appearance(self, speed_factor=1.0):
+        dot_anim = super().animate_appearance(speed_factor)
+        
         if len(self.doors) > 0:
-            super().animate_appearance(scene, speed_factor)
-            scene.play(
-                Create(self.doors, lag_ratio=0.2), 
-                run_time=1.0 * speed_factor
-            )
-        else:
-            print("Animation Warning: No doors to animate in DoorPlan.")
+            door_anim = Create(self.doors, lag_ratio=0.2, run_time=1.0 * speed_factor)
+            return Succession(dot_anim, door_anim)
+        
+        return dot_anim
