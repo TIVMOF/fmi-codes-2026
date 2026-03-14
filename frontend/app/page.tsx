@@ -2,12 +2,13 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/components/auth/auth-provider';
 import { LoginForm } from '@/components/auth/login-form';
 import { RegisterForm } from '@/components/auth/register-form';
 import { Button } from '@/components/ui/button';
-import { Shield, Users, LayoutGrid, Play, CheckCircle, Zap, BarChart3, Building2 } from 'lucide-react';
+import { Users, LayoutGrid, Play, CheckCircle, Zap, BarChart3, Building2 } from 'lucide-react';
 
 export default function HomePage() {
 	const { user, isLoading } = useAuth();
@@ -43,9 +44,7 @@ export default function HomePage() {
 				{/* Left side - Branding */}
 				<div className='hidden flex-1 flex-col justify-between bg-card p-12 lg:flex'>
 					<Button type='button' variant='ghost' onClick={() => setShowAuth(false)} className='h-auto w-fit justify-start gap-3 p-0 text-left hover:bg-transparent'>
-						<div className='flex h-10 w-10 items-center justify-center rounded-lg bg-primary'>
-							<Shield className='h-6 w-6 text-primary-foreground' />
-						</div>
+						<Image src='/turbodogy-b.png' alt='Silent Path logo' width={28} height={28} />
 						<span className='text-2xl font-bold text-foreground'>Silent Path</span>
 					</Button>
 
@@ -73,9 +72,7 @@ export default function HomePage() {
 						{/* Mobile branding */}
 						<div className='mb-8 flex flex-col items-center gap-3 lg:hidden'>
 							<Button type='button' variant='ghost' onClick={() => setShowAuth(false)} className='h-auto w-fit gap-3 p-0 hover:bg-transparent'>
-								<div className='flex h-12 w-12 items-center justify-center rounded-lg bg-primary'>
-									<Shield className='h-7 w-7 text-primary-foreground' />
-								</div>
+								<Image src='/turbodogy-b.png' alt='Silent Path logo' width={32} height={32} />
 								<span className='text-2xl font-bold text-foreground'>Silent Path</span>
 							</Button>
 							<p className='text-center text-sm text-muted-foreground'>Emergency Evacuation Simulator</p>
@@ -93,10 +90,8 @@ export default function HomePage() {
 			{/* Navigation */}
 			<nav className='fixed top-0 left-0 right-0 z-50 border-b border-border/70 bg-background/70 backdrop-blur-xl'>
 				<div className='mx-auto flex h-16 max-w-7xl items-center justify-between px-6'>
-					<div className='flex items-center gap-3 animate-fade-up'>
-						<div className='flex h-9 w-9 items-center justify-center rounded-lg bg-primary shadow-lg shadow-primary/30'>
-							<Shield className='h-5 w-5 text-primary-foreground' />
-						</div>
+					<div className='flex items-center gap-2 animate-fade-up'>
+						<Image src='/turbodogy-b.png' alt='Silent Path logo' width={24} height={24} />
 						<span className='text-xl font-bold text-foreground'>Silent Path</span>
 					</div>
 					<div className='flex items-center gap-3 animate-fade-up delay-200'>
@@ -291,7 +286,7 @@ export default function HomePage() {
 						<div className='space-y-3'>
 							<div className='flex items-center gap-3'>
 								<div className='flex h-9 w-9 items-center justify-center rounded-lg bg-primary'>
-									<Shield className='h-5 w-5 text-primary-foreground' />
+									<Image src='/turbodogy-w.png' alt='Silent Path logo' width={24} height={24} />
 								</div>
 								<span className='text-lg font-semibold text-foreground'>Silent Path</span>
 							</div>

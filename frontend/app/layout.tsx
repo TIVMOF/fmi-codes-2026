@@ -14,18 +14,17 @@ export const metadata: Metadata = {
 	icons: {
 		icon: [
 			{
-				url: '/icon.ico',
+				url: '/circle.ico',
 				media: '(prefers-color-scheme: light)',
 			},
 			{
-				url: '/icon.ico',
+				url: '/icon-white.ico',
 				media: '(prefers-color-scheme: dark)',
 			},
 			{
-				url: '/icon.ico',
+				url: '/circle.ico',
 			},
 		],
-		apple: '/apple-icon.png',
 	},
 };
 
