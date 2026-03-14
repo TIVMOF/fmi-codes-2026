@@ -1,9 +1,7 @@
 import json
 from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from django.contrib.auth.decorators import login_required
-from django.views.decorators.http import require_http_methods
-from django.core.exceptions import ValidationError
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
 import logging
 
 from .models import Simulation, SimulationVideo
@@ -17,19 +15,25 @@ def run_simulation(simulation_data):
     #temporary
     return "test.mp4"
 
-@csrf_exempt
-@login_required
-@require_http_methods(["POST"])
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
 def create_simulation(request):
     try:
-        # Parse JSON data
-        try:
-            simulation_data = json.loads(request.body)
-        except json.JSONDecodeError:
-            return JsonResponse({"error": "Invalid JSON"}, status=400)
+        payload = request.data if isinstance(request.data, dict) else {}
+
+        simulation_data = payload.get("data", payload)
+        simulation_name = payload.get("name") or "Untitled Simulation"
+        grid_width = payload.get("gridWidth") or payload.get("grid_width") or 0
+        grid_height = payload.get("gridHeight") or payload.get("grid_height") or 0
+        schematic_url = payload.get("schematicUrl") or payload.get("schematic_url")
 
         simulation = Simulation.objects.create(
             user=request.user,
+            name=simulation_name,
+            data=simulation_data,
+            grid_width=grid_width,
+            grid_height=grid_height,
+            schematic_url=schematic_url,
             status="processing"
         )
 
@@ -56,29 +60,28 @@ def create_simulation(request):
             return JsonResponse({
                 "success": True,
                 "simulation_id": simulation.id,
+                "status": simulation.status,
                 "video_url": video_url
             })
 
         except Exception as processing_error:
-            simulation.status = "failed"
-            simulation.save()
-
             logger.error(f"Processing failed for simulation {simulation.id}: {str(processing_error)}")
 
+            # Keep simulation available instead of failing the create request.
             return JsonResponse({
-                "success": False,
-                "error": f"Simulation failed: {str(processing_error)}"
-            }, status=500)
+                "success": True,
+                "simulation_id": simulation.id,
+                "status": simulation.status,
+                "warning": f"Simulation created but processing is delayed: {str(processing_error)}"
+            }, status=201)
 
     except Exception as e:
         logger.error(f"Unexpected error in create_simulation: {str(e)}")
-        return JsonResponse({
-            "success": False,
-            "error": "Internal server error"
-        }, status=500)
+        return JsonResponse({"success": False, "error": "Internal server error"}, status=500)
 
 
-@login_required
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
 def get_simulations(request, simulation_id=None):
     try:
         if simulation_id:
@@ -94,8 +97,15 @@ def get_simulations(request, simulation_id=None):
                     "success": True,
                     "simulation": {
                         "id": simulation.id,
+                        "name": simulation.name,
                         "status": simulation.status,
+                        "data": simulation.data,
+                        "grid_width": simulation.grid_width,
+                        "grid_height": simulation.grid_height,
+                        "schematic_url": simulation.schematic_url,
                         "created_at": simulation.created_at.isoformat(),
+                        "updated_at": simulation.updated_at.isoformat(),
+                        "video_url": videos.first().video_url if videos.exists() else None,
                         "videos": [
                             {
                                 "url": v.video_url,
@@ -122,9 +132,16 @@ def get_simulations(request, simulation_id=None):
 
                 data.append({
                     "id": s.id,
+                    "name": s.name,
                     "status": s.status,
+                    "data": s.data,
+                    "grid_width": s.grid_width,
+                    "grid_height": s.grid_height,
+                    "schematic_url": s.schematic_url,
                     "created_at": s.created_at.isoformat(),
+                    "updated_at": s.updated_at.isoformat(),
                     "video_count": videos.count(),
+                    "video_url": videos.first().video_url if videos.exists() else None,
                     "videos": [
                         {
                             "url": v.video_url,
@@ -147,8 +164,8 @@ def get_simulations(request, simulation_id=None):
         }, status=500)
 
 # Optional: Add a delete endpoint
-@login_required
-@require_http_methods(["DELETE"])
+@api_view(["DELETE"])
+@permission_classes([IsAuthenticated])
 def delete_simulation(request, simulation_id):
     """
     Delete a simulation (soft delete recommended)

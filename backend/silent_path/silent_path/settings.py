@@ -50,7 +50,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'channels',
-    'chat',
     'rest_framework',
 
     'users',
@@ -71,7 +70,6 @@ SIMPLE_JWT = {
 CELERY_BROKER_URL = 'redis://localhost:6379/0'
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
-
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

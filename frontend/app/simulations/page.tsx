@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Plus, Search, LayoutGrid } from 'lucide-react';
+import { toast } from 'sonner';
 import type { Simulation } from '@/types/simulation';
 
 export default function SimulationsPage() {
@@ -38,6 +39,7 @@ export default function SimulationsPage() {
 			const response = await fetch(`/api/simulations/${id}`, { method: 'DELETE' });
 			if (response.ok) {
 				setSimulations(simulations.filter((s) => s.id !== id));
+				toast.success('Simulation deleted successfully');
 			}
 		} catch (error) {
 			console.error('Failed to delete simulation:', error);

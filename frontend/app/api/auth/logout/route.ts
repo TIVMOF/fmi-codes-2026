@@ -1,15 +1,24 @@
-import { NextResponse } from 'next/server'
-import { clearAuthToken } from '@/lib/auth'
+import { NextResponse } from 'next/server';
+import { clearAuthToken, getAuthToken } from '@/lib/auth';
+import { djangoFetch } from '@/lib/api';
 
 export async function POST() {
-  try {
-    await clearAuthToken()
-    return NextResponse.json({ success: true })
-  } catch (error) {
-    console.error('Logout error:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
-  }
+	try {
+		const token = await getAuthToken();
+		if (token) {
+			await djangoFetch(
+				'/users/logout/',
+				{
+					method: 'POST',
+				},
+				token,
+			);
+		}
+
+		await clearAuthToken();
+		return NextResponse.json({ success: true });
+	} catch (error) {
+		console.error('Logout error:', error);
+		return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+	}
 }

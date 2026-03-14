@@ -1,19 +1,6 @@
-version: "3.9"
+version: '3.9'
 
 services:
-
-  db:
-    image: postgres:15
-    container_name: evacuation_postgres
-    environment:
-      POSTGRES_DB: evacuation_db
-      POSTGRES_USER: evacuation_user
-      POSTGRES_PASSWORD: password123
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-
   web:
     build: .
     container_name: evacuation_django
@@ -21,15 +8,4 @@ services:
     volumes:
       - .:/silent_path
     ports:
-      - "8000:8000"
-    depends_on:
-      - db
-    environment:
-      DB_HOST: db
-      DB_NAME: evacuation_db
-      DB_USER: evacuation_user
-      DB_PASSWORD: password123
-      DB_PORT: 5432
-
-volumes:
-  postgres_data:
+      - '8000:8000'

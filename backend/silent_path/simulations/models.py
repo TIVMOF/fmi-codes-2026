@@ -9,7 +9,14 @@ class Simulation(models.Model):
         related_name="simulations"
     )
 
+    name = models.CharField(max_length=255, default="Untitled Simulation")
+    data = models.JSONField(default=dict, blank=True)
+    schematic_url = models.URLField(blank=True, null=True)
+    grid_width = models.PositiveIntegerField(default=0)
+    grid_height = models.PositiveIntegerField(default=0)
+
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     status = models.CharField(
         max_length=20,
